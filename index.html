@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>プロンプト作成ツール</title>
+    <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body>
+    <header>
+        <h1>
+            <a href="" style="text-decoration: none; color: inherit; cursor: pointer;">
+    プロンプト作成ツール
+  </a>
+        </h1>
+
+    </header>
+    <div class="container">
+        <aside class="sidebar">
+            <nav>
+                <ul id="leftcontainer">
+
+                </ul>
+            </nav>
+        </aside>
+        <main>
+            <div id="destination-container">
+
+            </div>
+            <div>
+
+                <button class="output-button" onclick="copyPrompts()">コピー</button>
+            </div>
+
+            <div class="sortable-container" id="sortable-container">
+
+            </div>
+        </main>
+    </div>
+    <footer>
+        <p>&copy; 2025 リンゴ</p>
+    </footer>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="array.js"></script>
+<script src="script.js"></script>
+
+</html>
