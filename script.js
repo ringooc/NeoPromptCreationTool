@@ -1,43 +1,102 @@
-document.getElementById("leftcontainer").innerHTML += Object.entries(x).map(([key, value]) => `<li><a href="#${key}">${key}</a></li>`).join('');
-
-const container = document.getElementById("sortable-container");
-let groupIndex = 1;
-
-for (const [category, items] of Object.entries(x)) {
-    // カテゴリタイトル
-    const section = document.createElement("div");
-    const title = document.createElement("h2");
-    title.textContent = category;
-    title.id = category;
-    section.appendChild(title);
-
-    for (const [label, prompt] of Object.entries(items)) {
-        const holderId = `btn${groupIndex}-container`;
-        const groupId = `btn${groupIndex}`;
-
-        const holder = document.createElement("span");
-        holder.className = "button-holder";
-        holder.id = holderId;
-
-        const group = document.createElement("span");
-        group.className = "button-group";
-        group.id = groupId;
-        group.setAttribute("prompt", prompt);
-
-        group.innerHTML = `
-        <span class="group-label">${label}</span>
-        <button onclick="mycopy('${prompt}')">⧉</button>
-        <button class="btn-plus" onclick="movebutton('destination-container')">+</button>
-        <button class="btn-minus" onclick="movebutton('${holderId}')">-</button>
-      `;
-
-        holder.appendChild(group);
-        section.appendChild(holder);
-        groupIndex++;
+const promptData = {
+    "人物": {
+        "性別": {
+            "女の子": "girl",
+            "女性": "woman"
+        },
+        "年齢": {
+            "幼女": "little girl",
+            "大人": "adult woman"
+        }
+    },
+    "表情": {
+        "ポジティブ": {
+            "笑顔": "smile",
+            "にこにこ": "grin"
+        },
+        "ネガティブ": {
+            "怒り": "angry",
+            "悲しみ": "sad"
+        }
+    },
+    "衣装": {
+        "制服": {
+            "セーラー服": "sailor uniform",
+            "ブレザー": "blazer"
+        },
+        "私服": {
+            "ワンピース": "one-piece dress",
+            "パーカー": "hoodie"
+        }
     }
+};
 
-    container.appendChild(section);
+function generatePromptButtons(promptData) {
+    const leftContainer = document.getElementById("leftcontainer");
+    const container = document.getElementById("sortable-container");
+
+    leftContainer.innerHTML = "";
+    container.innerHTML = "";
+    let groupIndex = 1;
+
+    // ナビゲーション生成
+    leftContainer.innerHTML += Object.entries(promptData)
+        .map(([key]) => `<li><a href="#${key}">${key}</a></li>`)
+        .join('');
+
+    // プロンプトボタン生成
+    for (const [bigCat, subCats] of Object.entries(promptData)) {
+        const bigSection = document.createElement("div");
+        bigSection.className = "bigcat-section";
+
+        const bigTitle = document.createElement("h1");
+        bigTitle.textContent = bigCat;
+        bigTitle.id = bigCat;
+        bigSection.appendChild(bigTitle);
+
+        for (const [subCat, items] of Object.entries(subCats)) {
+            const section = document.createElement("div");
+
+            const title = document.createElement("h2");
+            title.textContent = subCat;
+            title.id = subCat;
+            section.appendChild(title);
+
+            for (const [label, prompt] of Object.entries(items)) {
+                const holderId = `btn${groupIndex}-container`;
+                const groupId = `btn${groupIndex}`;
+
+                const holder = document.createElement("span");
+                holder.className = "button-holder";
+                holder.id = holderId;
+
+                const group = document.createElement("span");
+                group.className = "button-group";
+                group.title = `ワード：「${prompt}」`;
+                group.id = groupId;
+                group.setAttribute("prompt", prompt);
+
+                group.innerHTML = `
+          <span class="group-label">${label}</span>
+          <button class="btn-copy" onclick="mycopy('${prompt}')" title="「${prompt}」をコピー">⧉</button>
+          <button class="btn-plus" onclick="movebutton('destination-container')">＋</button>
+          <button class="btn-minus" onclick="movebutton('${holderId}')">−</button>
+        `;
+
+                holder.appendChild(group);
+                section.appendChild(holder);
+                groupIndex++;
+            }
+
+            bigSection.appendChild(section);
+        }
+
+        container.appendChild(bigSection);
+    }
 }
+
+generatePromptButtons(promptData);
+
 
 function mycopy(text) {
     navigator.clipboard.writeText(text).then(() => {
@@ -58,6 +117,7 @@ function getPromptsInDestination() {
 
     console.log(prompts.join(', '));
 }
+
 
 function copyPrompts() {
     const destination = document.getElementById('destination-container');

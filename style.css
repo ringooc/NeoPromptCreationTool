@@ -1,13 +1,13 @@
 :root {
-    --bg-dark: #0d1117;
-    --bg-sidebar: linear-gradient(180deg, #141b2b, #0d1117);
-    --bg-main: linear-gradient(135deg, #0d1117, #1a2a3a);
-    --accent-blue: #58a6ff;
-    --text-main: #e6edf3;
-    --text-muted: #b0b8c2;
-    --border-color: #30363d;
-    --shadow-light: 0 0 10px rgba(88, 166, 255, 0.15);
-    --glow-blue: 0 0 8px rgba(88, 166, 255, 0.5);
+    --bg-dark: #12161c;
+    --bg-sidebar: linear-gradient(180deg, #1a222f, #12161c);
+    --bg-main: linear-gradient(135deg, #12161c, #1e2a36);
+    --accent-blue: #3fa9f5;
+    --text-main: #e0e6ed;
+    --text-muted: #9ca5b4;
+    --border-color: rgba(255, 255, 255, 0.07);
+    --shadow-light: 0 0 10px rgba(63, 169, 245, 0.1);
+    --glow-blue: 0 0 8px rgba(63, 169, 245, 0.3);
 }
 
 * {
@@ -135,6 +135,10 @@ footer {
     user-select: none;
     box-shadow: 0 0 4px rgba(88, 166, 255, 0.3);
     display: inline-block;
+}
+
+.button-holder {
+    margin-right: 0.4rem;
 }
 
 .button-group button {
@@ -284,4 +288,34 @@ footer {
     background: linear-gradient(180deg, #3a506b, #5bc0eb);
     /* 水色アクセントへ */
     box-shadow: 0 0 6px rgba(139, 233, 253, 0.6);
+}
+
+#sortable-container h1 {
+    font-size: 1.5rem;
+    color: #80c0ff;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(128, 192, 255, 0.2);
+    padding: 0.2rem 0.5rem 0.5rem 0.2rem;
+    background: linear-gradient(to right, rgba(128, 192, 255, 0.1), transparent);
+    text-shadow: 0 0 4px rgba(128, 192, 255, 0.4);
+    border-radius: 8px;
+}
+
+#sortable-container h2 {
+    font-size: 1.2rem;
+    color: #aad8ff;
+    margin-top: 1.2rem;
+    margin-bottom: 0.6rem;
+    padding-left: 0.4rem;
+    border-left: 3px solid rgba(88, 166, 255, 0.4);
+    text-shadow: 0 0 3px rgba(88, 166, 255, 0.2);
+}
+
+.bigcat-section {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: linear-gradient(135deg, #1c1c24, #2c2c38);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
 }
