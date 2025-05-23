@@ -11,14 +11,19 @@
             background: #0d1117;
             color: #cdd9e5;
             margin: 0;
-            padding: 0;
+            padding: 1rem
+        }
+        
+        h1 {
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 1rem
         }
         
         .container {
             display: flex;
-            height: 80vh;
-            padding: 1rem;
             gap: 1rem;
+            height: 80vh
         }
         
         #sidebar,
@@ -27,136 +32,144 @@
             background: #161b22;
             border: 1px solid #30363d;
             border-radius: 8px;
-            overflow-y: auto;
             padding: 1rem;
+            overflow-y: auto
         }
         
         #words {
-            width: 40%;
+            flex: 1;
             background: #161b22;
             border: 1px solid #30363d;
             border-radius: 8px;
-            overflow-y: auto;
             padding: 1rem;
             display: flex;
             flex-direction: column;
-        }
-        
-        ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        li {
-            padding: 0.3rem 0.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            user-select: none;
-        }
-        
-        li.selected {
-            background-color: #2381ff;
-            color: white;
-        }
-        
-        button {
-            background: #2381ff;
-            border: none;
-            color: white;
-            padding: 0.4rem 0.8rem;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 0.2rem 0.2rem 0.2rem 0;
-        }
-        
-        button:disabled {
-            background: #555;
-            cursor: default;
-        }
-        
-        input[type="text"],
-        textarea {
-            width: 100%;
-            box-sizing: border-box;
-            border-radius: 5px;
-            border: 1px solid #30363d;
-            background: #0d1117;
-            color: #cdd9e5;
-            padding: 0.4rem;
-            margin-bottom: 0.6rem;
-            font-family: monospace;
-            font-size: 14px;
-        }
-        
-        label {
-            font-weight: bold;
-            margin-bottom: 0.3rem;
-            display: block;
-        }
-        
-        #json-output {
-            width: 98%;
-            height: 140px;
-            margin: 1rem auto;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            color: #cdd9e5;
-            font-family: monospace;
-            padding: 1rem;
-            resize: none;
+            gap: 0.5rem;
+            overflow-y: auto
         }
         
         .section-header {
             font-weight: bold;
             margin-bottom: 0.5rem;
             border-bottom: 1px solid #30363d;
-            padding-bottom: 0.3rem;
+            padding-bottom: 0.3rem
+        }
+        
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+        
+        li {
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none
+        }
+        
+        li.selected {
+            background: #2381ff;
+            color: #fff
+        }
+        
+        input,
+        textarea,
+        button {
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0.3rem 0;
+            padding: 0.5rem;
+            background: #0d1117;
+            color: #cdd9e5;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            font-family: monospace
+        }
+        
+        button {
+            cursor: pointer;
+        }
+        
+        button:disabled {
+            background: #555;
+            cursor: default
+        }
+        
+        #json-output {
+            height: 200px;
+            resize: none
+        }
+        
+        #bigcat-list,
+        #subcat-list {
+            max-height: 40vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #444 #161b22;
+        }
+        
+        #bigcat-list::-webkit-scrollbar,
+        #subcat-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #bigcat-list::-webkit-scrollbar-thumb,
+        #subcat-list::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
         }
     </style>
 </head>
 
 <body>
-
-    <h1 style="text-align:center; cursor:pointer;" onclick="location.reload()">プロンプト編集ツール</h1>
+    <h1 onclick="location.reload()">プロンプト編集ツール</h1>
     <a href="index.html" style="color: #80c0ff; text-decoration: none;">プロンプト作成ツールにもどる</a>
     <div class="container">
+
         <div id="sidebar">
             <div class="section-header">大カテゴリー</div>
             <ul id="bigcat-list"></ul>
 
-            <input type="text" id="new-bigcat-input" placeholder="新しい大カテゴリー名" />
-            <button id="confirm-add-bigcat">追加</button>
-            <button id="delete-bigcat-btn" disabled>削除</button>
-            <div id="bigcat-error" style="color:#ff6b6b; font-size:0.85rem;"></div>
+            <div class="section-header">追加</div>
+            <input id="add-big-input" placeholder="新規大カテゴリー名" />
+            <button id="add-big-btn">追加</button>
+            <div id="add-big-error" style="color:#ff6b6b;font-size:.85rem"></div>
+
+            <div class="section-header">編集/削除</div>
+            <input id="edit-big-input" placeholder="選択後編集用" disabled />
+            <button id="rename-big-btn" disabled>変更</button>
+            <button id="delete-big-btn" disabled>削除</button>
+            <div id="edit-big-error" style="color:#ff6b6b;font-size:.85rem"></div>
         </div>
 
         <div id="subcat">
             <div class="section-header">小カテゴリー</div>
             <ul id="subcat-list"></ul>
 
-            <input type="text" id="new-subcat-input" placeholder="新しい小カテゴリー名" />
-            <button id="confirm-add-subcat" disabled>追加</button>
-            <button id="delete-subcat-btn" disabled>削除</button>
-            <div id="subcat-error" style="color:#ff6b6b; font-size:0.85rem;"></div>
+            <div class="section-header">追加</div>
+            <input id="add-sub-input" placeholder="新規小カテゴリー名" disabled />
+            <button id="add-sub-btn" disabled>追加</button>
+            <div id="add-sub-error" style="color:#ff6b6b;font-size:.85rem"></div>
+
+            <div class="section-header">編集/削除</div>
+            <input id="edit-sub-input" placeholder="選択後編集用" disabled />
+            <button id="rename-sub-btn" disabled>変更</button>
+            <button id="delete-sub-btn" disabled>削除</button>
+            <div id="edit-sub-error" style="color:#ff6b6b;font-size:.85rem"></div>
         </div>
 
         <div id="words">
-            <div class="section-header">ワード一括編集</div>
-            <label for="displaynames-textarea">表示名（1行ごと）</label>
-            <textarea id="displaynames-textarea" rows="10" placeholder="例：&#10;笑顔&#10;赤面"></textarea>
-
-            <label for="prompts-textarea">プロンプト（行数を揃える）</label>
-            <textarea id="prompts-textarea" rows="10" placeholder="例：&#10;smile&#10;blush"></textarea>
-
-            <button id="save-bulk-btn" disabled>保存</button>
-            <button id="clear-bulk-btn">クリア</button>
+            <div class="section-header">表示名（改行区切り）</div>
+            <textarea id="displaynames-text" rows="6"></textarea>
+            <div class="section-header">プロンプト（改行数を合わせる）</div>
+            <textarea id="prompts-text" rows="6"></textarea>
+            <button id="save-words-btn" disabled>追加</button>
+            <div class="section-header" style="margin-top:1rem;">現在のJSON</div>
+            <textarea id="json-output" readonly></textarea>
+            <button id="copy-json-btn" style="width:auto;">コピー</button>
         </div>
-    </div>
 
-    <div style="padding:1rem;">
-        <div class="section-header">現在のJSON（コピーして保存）</div>
-        <textarea id="json-output" readonly></textarea>
     </div>
 
     <script>
@@ -174,177 +187,208 @@
                 }
             }
         };
+        let selBig = null,
+            selSub = null;
 
-        let selectedBigCat = null;
-        let selectedSubCat = null;
+        const bigList = document.getElementById("bigcat-list"),
+            subList = document.getElementById("subcat-list"),
+            addBigInput = document.getElementById("add-big-input"),
+            editBigInput = document.getElementById("edit-big-input"),
+            addBigBtn = document.getElementById("add-big-btn"),
+            renameBigBtn = document.getElementById("rename-big-btn"),
+            deleteBigBtn = document.getElementById("delete-big-btn"),
+            addBigErr = document.getElementById("add-big-error"),
+            editBigErr = document.getElementById("edit-big-error"),
 
-        const bigcatList = document.getElementById('bigcat-list');
-        const subcatList = document.getElementById('subcat-list');
-        const displaynamesTextarea = document.getElementById('displaynames-textarea');
-        const promptsTextarea = document.getElementById('prompts-textarea');
-        const saveBulkBtn = document.getElementById('save-bulk-btn');
-        const clearBulkBtn = document.getElementById('clear-bulk-btn');
-        const jsonOutput = document.getElementById('json-output');
+            addSubInput = document.getElementById("add-sub-input"),
+            editSubInput = document.getElementById("edit-sub-input"),
+            addSubBtn = document.getElementById("add-sub-btn"),
+            renameSubBtn = document.getElementById("rename-sub-btn"),
+            deleteSubBtn = document.getElementById("delete-sub-btn"),
+            addSubErr = document.getElementById("add-sub-error"),
+            editSubErr = document.getElementById("edit-sub-error"),
 
-        const newBigcatInput = document.getElementById('new-bigcat-input');
-        const newSubcatInput = document.getElementById('new-subcat-input');
-        const confirmAddBigcatBtn = document.getElementById('confirm-add-bigcat');
-        const confirmAddSubcatBtn = document.getElementById('confirm-add-subcat');
-        const deleteBigcatBtn = document.getElementById('delete-bigcat-btn');
-        const deleteSubcatBtn = document.getElementById('delete-subcat-btn');
-        const bigcatError = document.getElementById('bigcat-error');
-        const subcatError = document.getElementById('subcat-error');
+            dispTA = document.getElementById("displaynames-text"),
+            promTA = document.getElementById("prompts-text"),
+            saveWordsBtn = document.getElementById("save-words-btn"),
+            jsonOut = document.getElementById("json-output");
 
-        function updateJsonOutput() {
-            jsonOutput.value = JSON.stringify(promptData, null, 2);
+        function updateJSON() {
+            jsonOut.value = JSON.stringify(promptData, null, 2)
         }
 
-        function renderBigCat() {
-            bigcatList.innerHTML = '';
-            for (const bigCat of Object.keys(promptData)) {
-                const li = document.createElement('li');
-                li.textContent = bigCat;
-                if (bigCat === selectedBigCat) li.classList.add('selected');
+        function refreshBig() {
+            bigList.innerHTML = "";
+            Object.keys(promptData).forEach(cat => {
+                let li = document.createElement("li");
+                li.textContent = cat;
+                if (cat === selBig) li.classList.add("selected");
                 li.onclick = () => {
-                    selectedBigCat = bigCat;
-                    selectedSubCat = null;
-                    renderBigCat();
-                    renderSubCat();
-                    clearTextareas();
-                    updateButtonStates();
+                    selBig = cat;
+                    selSub = null;
+                    addSubInput.disabled = false;
+                    editBigInput.value = cat;
+                    addBigInput.value = "";
+                    editSubInput.value = "";
+                    refreshBig();
+                    refreshSub();
+                    clearWords();
+                    updateButtons();
                 };
-                bigcatList.appendChild(li);
-            }
-            updateButtonStates();
+                bigList.append(li);
+            });
+            updateButtons();
+            updateJSON();
         }
 
-        function renderSubCat() {
-            subcatList.innerHTML = '';
-            if (!selectedBigCat) return;
-            const subCats = promptData[selectedBigCat];
-            for (const subCat of Object.keys(subCats)) {
-                const li = document.createElement('li');
-                li.textContent = subCat;
-                if (subCat === selectedSubCat) li.classList.add('selected');
+        function refreshSub() {
+            subList.innerHTML = "";
+            if (!selBig) return;
+            Object.keys(promptData[selBig]).forEach(sub => {
+                let li = document.createElement("li");
+                li.textContent = sub;
+                if (sub === selSub) li.classList.add("selected");
                 li.onclick = () => {
-                    selectedSubCat = subCat;
-                    renderSubCat();
-                    loadWordsToTextareas();
-                    updateButtonStates();
+                    selSub = sub;
+                    editSubInput.value = sub;
+                    addSubInput.value = "";
+                    refreshSub();
+                    loadWords();
+                    updateButtons();
                 };
-                subcatList.appendChild(li);
-            }
-            updateButtonStates();
+                subList.append(li);
+            });
         }
 
-        function loadWordsToTextareas() {
-            const words = promptData[selectedBigCat][selectedSubCat];
-            const labels = Object.keys(words);
-            const prompts = Object.values(words);
-            displaynamesTextarea.value = labels.join('\n');
-            promptsTextarea.value = prompts.join('\n');
-            saveBulkBtn.disabled = false;
+        function clearWords() {
+            dispTA.value = "";
+            promTA.value = "";
+            saveWordsBtn.disabled = true
         }
 
-        function clearTextareas() {
-            displaynamesTextarea.value = '';
-            promptsTextarea.value = '';
-            saveBulkBtn.disabled = true;
+        function loadWords() {
+            let w = promptData[selBig][selSub],
+                ks = Object.keys(w),
+                vs = Object.values(w);
+            dispTA.value = ks.join("\n");
+            promTA.value = vs.join("\n");
+            saveWordsBtn.disabled = false;
         }
 
-        function updateButtonStates() {
-            confirmAddSubcatBtn.disabled = !selectedBigCat;
-            deleteBigcatBtn.disabled = !selectedBigCat;
-            deleteSubcatBtn.disabled = !selectedBigCat || !selectedSubCat;
+        function updateButtons() {
+            addBigBtn.disabled = !addBigInput.value.trim();
+            renameBigBtn.disabled = !(selBig && editBigInput.value.trim());
+            deleteBigBtn.disabled = !selBig;
+
+            addSubBtn.disabled = !(selBig && addSubInput.value.trim());
+            renameSubBtn.disabled = !(selSub && editSubInput.value.trim());
+            deleteSubBtn.disabled = !selSub;
+            saveWordsBtn.disabled = !(selBig && selSub);
         }
 
-        confirmAddBigcatBtn.onclick = () => {
-            const name = newBigcatInput.value.trim();
-            bigcatError.textContent = '';
-            if (!name) {
-                bigcatError.textContent = '名前を入力してください';
+        addBigBtn.onclick = () => {
+            let v = addBigInput.value.trim();
+            addBigErr.textContent = "";
+            if (promptData[v]) {
+                addBigErr.textContent = "既に存在";
                 return;
             }
-            if (promptData[name]) {
-                bigcatError.textContent = '既に存在します';
+            promptData[v] = {};
+            selBig = v;
+            addBigInput.value = "";
+            addSubInput.disabled = false;
+            refreshBig();
+            refreshSub();
+            clearWords();
+        };
+        renameBigBtn.onclick = () => {
+            let v = editBigInput.value.trim();
+            editBigErr.textContent = "";
+            if (!v || !selBig || promptData[v]) {
+                editBigErr.textContent = "無効";
                 return;
             }
-            promptData[name] = {};
-            selectedBigCat = name;
-            selectedSubCat = null;
-            newBigcatInput.value = '';
-            renderBigCat();
-            renderSubCat();
-            clearTextareas();
-            updateJsonOutput();
+            promptData[v] = promptData[selBig];
+            delete promptData[selBig];
+            selBig = v;
+            refreshBig();
+            refreshSub();
+        };
+        deleteBigBtn.onclick = () => {
+            if (!selBig || !confirm(`「${selBig}」を削除しますか？`)) return;
+            delete promptData[selBig];
+            selBig = null;
+            selSub = null;
+            editBigInput.value = "";
+            editSubInput.value = "";
+            addSubInput.disabled = true;
+            refreshBig();
+            refreshSub();
+            clearWords();
         };
 
-        confirmAddSubcatBtn.onclick = () => {
-            const name = newSubcatInput.value.trim();
-            subcatError.textContent = '';
-            if (!name) {
-                subcatError.textContent = '名前を入力してください';
+        addSubBtn.onclick = () => {
+            let v = addSubInput.value.trim();
+            addSubErr.textContent = "";
+            if (promptData[selBig][v]) {
+                addSubErr.textContent = "既に存在";
                 return;
             }
-            if (promptData[selectedBigCat][name]) {
-                subcatError.textContent = '既に存在します';
+            promptData[selBig][v] = {};
+            selSub = v;
+            addSubInput.value = "";
+            refreshSub();
+            clearWords();
+        };
+        renameSubBtn.onclick = () => {
+            let v = editSubInput.value.trim();
+            editSubErr.textContent = "";
+            if (!v || !selSub || promptData[selBig][v]) {
+                editSubErr.textContent = "無効";
                 return;
             }
-            promptData[selectedBigCat][name] = {};
-            selectedSubCat = name;
-            newSubcatInput.value = '';
-            renderSubCat();
-            clearTextareas();
-            updateJsonOutput();
+            promptData[selBig][v] = promptData[selBig][selSub];
+            delete promptData[selBig][selSub];
+            selSub = v;
+            refreshSub();
+            clearWords();
+        };
+        deleteSubBtn.onclick = () => {
+            if (!selSub || !confirm(`「${selSub}」を削除しますか？`)) return;
+            delete promptData[selBig][selSub];
+            selSub = null;
+            editSubInput.value = "";
+            refreshSub();
+            clearWords();
         };
 
-        deleteBigcatBtn.onclick = () => {
-            if (selectedBigCat && confirm(`「${selectedBigCat}」を削除してよいですか？`)) {
-                delete promptData[selectedBigCat];
-                selectedBigCat = null;
-                selectedSubCat = null;
-                renderBigCat();
-                renderSubCat();
-                clearTextareas();
-                updateJsonOutput();
-            }
-        };
-
-        deleteSubcatBtn.onclick = () => {
-            if (selectedBigCat && selectedSubCat && confirm(`「${selectedSubCat}」を削除してよいですか？`)) {
-                delete promptData[selectedBigCat][selectedSubCat];
-                selectedSubCat = null;
-                renderSubCat();
-                clearTextareas();
-                updateJsonOutput();
-            }
-        };
-
-        saveBulkBtn.onclick = () => {
-            const labels = displaynamesTextarea.value.trim().split('\n').map(s => s.trim());
-            const prompts = promptsTextarea.value.trim().split('\n').map(s => s.trim());
-            if (labels.length !== prompts.length) {
-                alert('行数が一致しません');
+        saveWordsBtn.onclick = () => {
+            let L = dispTA.value.trim().split("\n"),
+                P = promTA.value.trim().split("\n");
+            if (L.length !== P.length) {
+                alert("行数不一致");
                 return;
             }
-            const result = {};
-            for (let i = 0; i < labels.length; i++) {
-                if (labels[i] && prompts[i]) {
-                    result[labels[i]] = prompts[i];
-                }
-            }
-            promptData[selectedBigCat][selectedSubCat] = result;
-            updateJsonOutput();
-            alert('保存しました');
+            let obj = {};
+            L.forEach((l, i) => obj[l] = P[i]);
+            promptData[selBig][selSub] = obj;
+            clearWords();
+            updateJSON();
         };
 
-        clearBulkBtn.onclick = clearTextareas;
+        document.getElementById("copy-json-btn").onclick = () => {
+            const text = document.getElementById("json-output").value;
+            navigator.clipboard.writeText(text).then(() => {
+                //alert("JSONをコピーしました");
+            });
+        };
 
-        renderBigCat();
-        renderSubCat();
-        updateJsonOutput();
+        [addBigInput, editBigInput, addSubInput, editSubInput].forEach(e => e.oninput = updateButtons);
+        refreshBig();
+        refreshSub();
+        updateButtons();
+        updateJSON();
     </script>
-
 </body>
 
 </html>
