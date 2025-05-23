@@ -1,13 +1,14 @@
 :root {
-    --bg-dark: #12161c;
-    --bg-sidebar: linear-gradient(180deg, #1a222f, #12161c);
-    --bg-main: linear-gradient(135deg, #12161c, #1e2a36);
-    --accent-blue: #3fa9f5;
-    --text-main: #e0e6ed;
-    --text-muted: #9ca5b4;
-    --border-color: rgba(255, 255, 255, 0.07);
-    --shadow-light: 0 0 10px rgba(63, 169, 245, 0.1);
-    --glow-blue: 0 0 8px rgba(63, 169, 245, 0.3);
+    --bg-dark: #0b0f14;
+    --bg-sidebar: linear-gradient(180deg, #1a2330, #0b0f14);
+    --bg-main: linear-gradient(135deg, #10151d, #1b2635);
+    --accent-blue: #4fc3f7;
+    --accent-blue-deep: #039be5;
+    --text-main: #f0f4fa;
+    --text-muted: #99aac3;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --shadow-light: 0 0 12px rgba(79, 195, 247, 0.15);
+    --glow-blue: 0 0 8px rgba(79, 195, 247, 0.3);
 }
 
 * {
@@ -292,23 +293,23 @@ footer {
 
 #sortable-container h1 {
     font-size: 1.5rem;
-    color: #80c0ff;
+    color: #60cbff;
     margin-bottom: 1rem;
     border-bottom: 1px solid rgba(128, 192, 255, 0.2);
     padding: 0.2rem 0.5rem 0.5rem 0.2rem;
-    background: linear-gradient(to right, rgba(128, 192, 255, 0.1), transparent);
-    text-shadow: 0 0 4px rgba(128, 192, 255, 0.4);
+    background: linear-gradient(to right, rgba(96, 203, 255, 0.12), transparent);
+    text-shadow: 0 0 6px rgba(96, 203, 255, 0.5);
     border-radius: 8px;
 }
 
 #sortable-container h2 {
     font-size: 1.2rem;
-    color: #aad8ff;
+    color: #85dcff;
     margin-top: 1.2rem;
     margin-bottom: 0.6rem;
     padding-left: 0.4rem;
-    border-left: 3px solid rgba(88, 166, 255, 0.4);
-    text-shadow: 0 0 3px rgba(88, 166, 255, 0.2);
+    border-left: 4px solid rgba(96, 203, 255, 0.5);
+    text-shadow: 0 0 4px rgba(96, 203, 255, 0.3);
 }
 
 .bigcat-section {

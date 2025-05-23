@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>promptData 一括編集ツール（表示名・プロンプト別テキストエリア）</title>
+    <title>promptData 編集ツール</title>
     <style>
         body {
             font-family: sans-serif;
@@ -66,7 +66,7 @@
             padding: 0.4rem 0.8rem;
             border-radius: 5px;
             cursor: pointer;
-            margin: 0.3rem 0.3rem 0 0;
+            margin: 0.2rem 0.2rem 0.2rem 0;
         }
         
         button:disabled {
@@ -83,10 +83,9 @@
             background: #0d1117;
             color: #cdd9e5;
             padding: 0.4rem;
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.6rem;
             font-family: monospace;
             font-size: 14px;
-            resize: vertical;
         }
         
         label {
@@ -97,7 +96,7 @@
         
         #json-output {
             width: 98%;
-            height: 120px;
+            height: 140px;
             margin: 1rem auto;
             background: #0d1117;
             border: 1px solid #30363d;
@@ -114,79 +113,64 @@
             border-bottom: 1px solid #30363d;
             padding-bottom: 0.3rem;
         }
-        
-        #textareas-container {
-            display: flex;
-            gap: 1rem;
-        }
-        
-        #display-names,
-        #prompts {
-            width: 50%;
-        }
     </style>
 </head>
 
 <body>
 
-    <h1 style="text-align:center; cursor:pointer; user-select:none;" onclick="location.reload()">プロンプト作成ツール（表示名・プロンプト別）</h1>
+    <h1 style="text-align:center; cursor:pointer;" onclick="location.reload()">プロンプト編集ツール</h1>
     <a href="index.html" style="color: #80c0ff; text-decoration: none;">プロンプト作成ツールにもどる</a>
     <div class="container">
         <div id="sidebar">
             <div class="section-header">大カテゴリー</div>
             <ul id="bigcat-list"></ul>
-            <button id="add-bigcat-btn">＋ 大カテゴリー追加</button>
+
+            <input type="text" id="new-bigcat-input" placeholder="新しい大カテゴリー名" />
+            <button id="confirm-add-bigcat">追加</button>
+            <button id="delete-bigcat-btn" disabled>削除</button>
+            <div id="bigcat-error" style="color:#ff6b6b; font-size:0.85rem;"></div>
         </div>
 
         <div id="subcat">
             <div class="section-header">小カテゴリー</div>
             <ul id="subcat-list"></ul>
-            <button id="add-subcat-btn" disabled>＋ 小カテゴリー追加</button>
+
+            <input type="text" id="new-subcat-input" placeholder="新しい小カテゴリー名" />
+            <button id="confirm-add-subcat" disabled>追加</button>
+            <button id="delete-subcat-btn" disabled>削除</button>
+            <div id="subcat-error" style="color:#ff6b6b; font-size:0.85rem;"></div>
         </div>
 
         <div id="words">
             <div class="section-header">ワード一括編集</div>
-            <div id="textareas-container">
-                <div id="display-names">
-                    <label for="displaynames-textarea">表示名（1行に1つ）</label>
-                    <textarea id="displaynames-textarea" placeholder="例&#10;笑顔&#10;赤面" rows="10"></textarea>
-                </div>
-                <div id="prompts">
-                    <label for="prompts-textarea">プロンプト（対応する表示名と同じ行数で）</label>
-                    <textarea id="prompts-textarea" placeholder="例&#10;smile&#10;blush" rows="10"></textarea>
-                </div>
-            </div>
+            <label for="displaynames-textarea">表示名（1行ごと）</label>
+            <textarea id="displaynames-textarea" rows="10" placeholder="例：&#10;笑顔&#10;赤面"></textarea>
+
+            <label for="prompts-textarea">プロンプト（行数を揃える）</label>
+            <textarea id="prompts-textarea" rows="10" placeholder="例：&#10;smile&#10;blush"></textarea>
+
             <button id="save-bulk-btn" disabled>保存</button>
             <button id="clear-bulk-btn">クリア</button>
         </div>
     </div>
 
     <div style="padding:1rem;">
-        <div class="section-header">現在のJSON（コピーして保存してください）</div>
+        <div class="section-header">現在のJSON（コピーして保存）</div>
         <textarea id="json-output" readonly></textarea>
     </div>
 
     <script>
-        // 初期データ例
         let promptData = {
             "人物": {
                 "性別": {
                     "女の子": "girl",
                     "女性": "woman"
-                },
-                "年齢": {
-                    "幼女": "little girl",
-                    "大人": "adult woman"
                 }
             },
             "表情": {
-                "ポジティブ": {
+                "感情": {
                     "笑顔": "smile",
-                    "にこにこ": "grin"
-                },
-                "ネガティブ": {
-                    "怒り": "angry",
-                    "悲しみ": "sad"
+                    "赤面": "blush"
                 }
             }
         };
@@ -200,9 +184,16 @@
         const promptsTextarea = document.getElementById('prompts-textarea');
         const saveBulkBtn = document.getElementById('save-bulk-btn');
         const clearBulkBtn = document.getElementById('clear-bulk-btn');
-        const addBigcatBtn = document.getElementById('add-bigcat-btn');
-        const addSubcatBtn = document.getElementById('add-subcat-btn');
         const jsonOutput = document.getElementById('json-output');
+
+        const newBigcatInput = document.getElementById('new-bigcat-input');
+        const newSubcatInput = document.getElementById('new-subcat-input');
+        const confirmAddBigcatBtn = document.getElementById('confirm-add-bigcat');
+        const confirmAddSubcatBtn = document.getElementById('confirm-add-subcat');
+        const deleteBigcatBtn = document.getElementById('delete-bigcat-btn');
+        const deleteSubcatBtn = document.getElementById('delete-subcat-btn');
+        const bigcatError = document.getElementById('bigcat-error');
+        const subcatError = document.getElementById('subcat-error');
 
         function updateJsonOutput() {
             jsonOutput.value = JSON.stringify(promptData, null, 2);
@@ -217,23 +208,19 @@
                 li.onclick = () => {
                     selectedBigCat = bigCat;
                     selectedSubCat = null;
-                    displaynamesTextarea.value = '';
-                    promptsTextarea.value = '';
-                    saveBulkBtn.disabled = true;
                     renderBigCat();
                     renderSubCat();
+                    clearTextareas();
+                    updateButtonStates();
                 };
                 bigcatList.appendChild(li);
             }
+            updateButtonStates();
         }
 
         function renderSubCat() {
             subcatList.innerHTML = '';
-            if (!selectedBigCat) {
-                addSubcatBtn.disabled = true;
-                return;
-            }
-            addSubcatBtn.disabled = false;
+            if (!selectedBigCat) return;
             const subCats = promptData[selectedBigCat];
             for (const subCat of Object.keys(subCats)) {
                 const li = document.createElement('li');
@@ -241,101 +228,118 @@
                 if (subCat === selectedSubCat) li.classList.add('selected');
                 li.onclick = () => {
                     selectedSubCat = subCat;
-                    saveBulkBtn.disabled = false;
                     renderSubCat();
                     loadWordsToTextareas();
+                    updateButtonStates();
                 };
                 subcatList.appendChild(li);
             }
+            updateButtonStates();
         }
 
         function loadWordsToTextareas() {
-            if (!selectedBigCat || !selectedSubCat) {
-                displaynamesTextarea.value = '';
-                promptsTextarea.value = '';
-                saveBulkBtn.disabled = true;
-                return;
-            }
             const words = promptData[selectedBigCat][selectedSubCat];
-            const labels = [];
-            const prompts = [];
-            for (const [label, prompt] of Object.entries(words)) {
-                labels.push(label);
-                prompts.push(prompt);
-            }
+            const labels = Object.keys(words);
+            const prompts = Object.values(words);
             displaynamesTextarea.value = labels.join('\n');
             promptsTextarea.value = prompts.join('\n');
             saveBulkBtn.disabled = false;
         }
 
-        saveBulkBtn.onclick = () => {
-            if (!selectedBigCat || !selectedSubCat) {
-                alert('大カテゴリーと小カテゴリーを選択してください。');
+        function clearTextareas() {
+            displaynamesTextarea.value = '';
+            promptsTextarea.value = '';
+            saveBulkBtn.disabled = true;
+        }
+
+        function updateButtonStates() {
+            confirmAddSubcatBtn.disabled = !selectedBigCat;
+            deleteBigcatBtn.disabled = !selectedBigCat;
+            deleteSubcatBtn.disabled = !selectedBigCat || !selectedSubCat;
+        }
+
+        confirmAddBigcatBtn.onclick = () => {
+            const name = newBigcatInput.value.trim();
+            bigcatError.textContent = '';
+            if (!name) {
+                bigcatError.textContent = '名前を入力してください';
                 return;
             }
+            if (promptData[name]) {
+                bigcatError.textContent = '既に存在します';
+                return;
+            }
+            promptData[name] = {};
+            selectedBigCat = name;
+            selectedSubCat = null;
+            newBigcatInput.value = '';
+            renderBigCat();
+            renderSubCat();
+            clearTextareas();
+            updateJsonOutput();
+        };
+
+        confirmAddSubcatBtn.onclick = () => {
+            const name = newSubcatInput.value.trim();
+            subcatError.textContent = '';
+            if (!name) {
+                subcatError.textContent = '名前を入力してください';
+                return;
+            }
+            if (promptData[selectedBigCat][name]) {
+                subcatError.textContent = '既に存在します';
+                return;
+            }
+            promptData[selectedBigCat][name] = {};
+            selectedSubCat = name;
+            newSubcatInput.value = '';
+            renderSubCat();
+            clearTextareas();
+            updateJsonOutput();
+        };
+
+        deleteBigcatBtn.onclick = () => {
+            if (selectedBigCat && confirm(`「${selectedBigCat}」を削除してよいですか？`)) {
+                delete promptData[selectedBigCat];
+                selectedBigCat = null;
+                selectedSubCat = null;
+                renderBigCat();
+                renderSubCat();
+                clearTextareas();
+                updateJsonOutput();
+            }
+        };
+
+        deleteSubcatBtn.onclick = () => {
+            if (selectedBigCat && selectedSubCat && confirm(`「${selectedSubCat}」を削除してよいですか？`)) {
+                delete promptData[selectedBigCat][selectedSubCat];
+                selectedSubCat = null;
+                renderSubCat();
+                clearTextareas();
+                updateJsonOutput();
+            }
+        };
+
+        saveBulkBtn.onclick = () => {
             const labels = displaynamesTextarea.value.trim().split('\n').map(s => s.trim());
             const prompts = promptsTextarea.value.trim().split('\n').map(s => s.trim());
             if (labels.length !== prompts.length) {
-                alert('表示名とプロンプトの行数が一致しません。');
+                alert('行数が一致しません');
                 return;
             }
-            let newWords = {};
+            const result = {};
             for (let i = 0; i < labels.length; i++) {
-                const label = labels[i];
-                const prompt = prompts[i];
-                if (!label || !prompt) {
-                    alert(`行 ${i + 1} に空の表示名かプロンプトがあります。`);
-                    return;
+                if (labels[i] && prompts[i]) {
+                    result[labels[i]] = prompts[i];
                 }
-                newWords[label] = prompt;
             }
-            promptData[selectedBigCat][selectedSubCat] = newWords;
+            promptData[selectedBigCat][selectedSubCat] = result;
             updateJsonOutput();
             alert('保存しました');
         };
 
-        clearBulkBtn.onclick = () => {
-            displaynamesTextarea.value = '';
-            promptsTextarea.value = '';
-            saveBulkBtn.disabled = true;
-        };
+        clearBulkBtn.onclick = clearTextareas;
 
-        addBigcatBtn.onclick = () => {
-            const newCat = prompt('追加する大カテゴリー名を入力してください');
-            if (!newCat) return;
-            if (promptData[newCat]) {
-                alert('すでに存在するカテゴリー名です');
-                return;
-            }
-            promptData[newCat] = {};
-            selectedBigCat = newCat;
-            selectedSubCat = null;
-            renderBigCat();
-            renderSubCat();
-            displaynamesTextarea.value = '';
-            promptsTextarea.value = '';
-            saveBulkBtn.disabled = true;
-            updateJsonOutput();
-        };
-
-        addSubcatBtn.onclick = () => {
-            if (!selectedBigCat) return;
-            const newSub = prompt('追加する小カテゴリー名を入力してください');
-            if (!newSub) return;
-            if (promptData[selectedBigCat][newSub]) {
-                alert('すでに存在する小カテゴリー名です');
-                return;
-            }
-            promptData[selectedBigCat][newSub] = {};
-            selectedSubCat = newSub;
-            renderSubCat();
-            displaynamesTextarea.value = '';
-            promptsTextarea.value = '';
-            saveBulkBtn.disabled = true;
-            updateJsonOutput();
-        };
-
-        // 初期描画
         renderBigCat();
         renderSubCat();
         updateJsonOutput();
