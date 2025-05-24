@@ -1,36 +1,3 @@
-const promptData = {
-    "人物": {
-        "性別": {
-            "女の子": "girl",
-            "女性": "woman"
-        },
-        "年齢": {
-            "幼女": "little girl",
-            "大人": "adult woman"
-        }
-    },
-    "表情": {
-        "ポジティブ": {
-            "笑顔": "smile",
-            "にこにこ": "grin"
-        },
-        "ネガティブ": {
-            "怒り": "angry",
-            "悲しみ": "sad"
-        }
-    },
-    "衣装": {
-        "制服": {
-            "セーラー服": "sailor uniform",
-            "ブレザー": "blazer"
-        },
-        "私服": {
-            "ワンピース": "one-piece dress",
-            "パーカー": "hoodie"
-        }
-    }
-};
-
 function generatePromptButtons(promptData) {
     const leftContainer = document.getElementById("leftcontainer");
     const container = document.getElementById("sortable-container");
@@ -40,8 +7,18 @@ function generatePromptButtons(promptData) {
     let groupIndex = 1;
 
     // ナビゲーション生成
-    leftContainer.innerHTML += Object.entries(promptData)
-        .map(([key]) => `<li><a href="#${key}">${key}</a></li>`)
+    leftContainer.innerHTML = Object.entries(promptData)
+        .map(([bigCat, subCats]) => {
+            const subList = Object.keys(subCats)
+                .map(subCat => `<li><a href="#${subCat}" class="subcat-link">${subCat}</a></li>`)
+                .join('');
+            return `
+      <li class="bigcat-item">
+        <a href="#${bigCat}" class="bigcat-link">${bigCat}</a>
+        <ul class="subcats">${subList}</ul>
+      </li>
+    `;
+        })
         .join('');
 
     // プロンプトボタン生成

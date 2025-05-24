@@ -4,73 +4,73 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>promptData 編集ツール</title>
+    <title>promptData 編集ツール（大・小並び替え対応）</title>
+    <!-- Sortable.js を CDN から読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <style>
         body {
             font-family: sans-serif;
             background: #0d1117;
             color: #cdd9e5;
             margin: 0;
-            padding: 1rem
+            padding: 1rem;
         }
         
         h1 {
             text-align: center;
             cursor: pointer;
-            margin-bottom: 1rem
+            margin-bottom: 1rem;
         }
         
         .container {
             display: flex;
             gap: 1rem;
-            height: 80vh
+            height: 80vh;
         }
         
         #sidebar,
         #subcat {
             width: 20%;
             background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 8px;
             padding: 1rem;
-            overflow-y: auto
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            overflow-y: auto;
         }
         
         #words {
             flex: 1;
             background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 8px;
             padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #30363d;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            overflow-y: auto
         }
         
         .section-header {
             font-weight: bold;
             margin-bottom: 0.5rem;
             border-bottom: 1px solid #30363d;
-            padding-bottom: 0.3rem
+            padding-bottom: 0.3rem;
         }
         
         ul {
             list-style: none;
             margin: 0;
-            padding: 0
+            padding: 0;
         }
         
         li {
             padding: 0.4rem 0.6rem;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            user-select: none
+            user-select: none;
         }
         
         li.selected {
             background: #2381ff;
-            color: #fff
+            color: #fff;
         }
         
         input,
@@ -84,40 +84,30 @@
             color: #cdd9e5;
             border: 1px solid #30363d;
             border-radius: 4px;
-            font-family: monospace
+            font-family: monospace;
         }
         
         button {
+            width: auto;
             cursor: pointer;
         }
         
         button:disabled {
             background: #555;
-            cursor: default
+            cursor: default;
         }
         
         #json-output {
-            height: 200px;
-            resize: none
+            height: 240px;
+            resize: none;
+            margin-top: 1rem;
         }
+        /* 大カテゴリ・小カテゴリリストにスクロール可能 */
         
         #bigcat-list,
         #subcat-list {
             max-height: 40vh;
             overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #444 #161b22;
-        }
-        
-        #bigcat-list::-webkit-scrollbar,
-        #subcat-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        #bigcat-list::-webkit-scrollbar-thumb,
-        #subcat-list::-webkit-scrollbar-thumb {
-            background: #444;
-            border-radius: 4px;
         }
     </style>
 </head>
@@ -126,7 +116,7 @@
     <h1 onclick="location.reload()">プロンプト編集ツール</h1>
     <a href="index.html" style="color: #80c0ff; text-decoration: none;">プロンプト作成ツールにもどる</a>
     <div class="container">
-
+        <!-- 大カテゴリー領域 -->
         <div id="sidebar">
             <div class="section-header">大カテゴリー</div>
             <ul id="bigcat-list"></ul>
@@ -134,62 +124,54 @@
             <div class="section-header">追加</div>
             <input id="add-big-input" placeholder="新規大カテゴリー名" />
             <button id="add-big-btn">追加</button>
-            <div id="add-big-error" style="color:#ff6b6b;font-size:.85rem"></div>
 
-            <div class="section-header">編集/削除</div>
-            <input id="edit-big-input" placeholder="選択後編集用" disabled />
+            <div class="section-header">編集／削除</div>
+            <input id="edit-big-input" placeholder="選択後編集用" />
             <button id="rename-big-btn" disabled>変更</button>
             <button id="delete-big-btn" disabled>削除</button>
-            <div id="edit-big-error" style="color:#ff6b6b;font-size:.85rem"></div>
         </div>
 
+        <!-- 小カテゴリー領域 -->
         <div id="subcat">
             <div class="section-header">小カテゴリー</div>
             <ul id="subcat-list"></ul>
 
             <div class="section-header">追加</div>
-            <input id="add-sub-input" placeholder="新規小カテゴリー名" disabled />
+            <input id="add-sub-input" placeholder="新規小カテゴリー名" />
             <button id="add-sub-btn" disabled>追加</button>
-            <div id="add-sub-error" style="color:#ff6b6b;font-size:.85rem"></div>
 
-            <div class="section-header">編集/削除</div>
-            <input id="edit-sub-input" placeholder="選択後編集用" disabled />
+            <div class="section-header">編集／削除</div>
+            <input id="edit-sub-input" placeholder="選択後編集用" />
             <button id="rename-sub-btn" disabled>変更</button>
             <button id="delete-sub-btn" disabled>削除</button>
-            <div id="edit-sub-error" style="color:#ff6b6b;font-size:.85rem"></div>
         </div>
 
+        <!-- ワード編集領域 -->
         <div id="words">
             <div class="section-header">表示名（改行区切り）</div>
             <textarea id="displaynames-text" rows="6"></textarea>
-            <div class="section-header">プロンプト（改行数を合わせる）</div>
+            <div class="section-header">プロンプト（改行数を揃える）</div>
             <textarea id="prompts-text" rows="6"></textarea>
             <button id="save-words-btn" disabled>追加</button>
-            <div class="section-header" style="margin-top:1rem;">現在のJSON</div>
+            <div class="section-header">現在のJSON</div>
             <textarea id="json-output" readonly></textarea>
             <button id="copy-json-btn" style="width:auto;">コピー</button>
         </div>
-
     </div>
-
+    <script src="array.js"></script>
     <script>
-        let promptData = {
-            "人物": {
-                "性別": {
-                    "女の子": "girl",
-                    "女性": "woman"
-                }
-            },
-            "表情": {
-                "感情": {
-                    "笑顔": "smile",
-                    "赤面": "blush"
-                }
-            }
-        };
+        // 大カテゴリ順序を記録
+        let orderList = Object.keys(promptData);
+        // 小カテゴリ順序をマップで管理（大カテゴリごと）
+        let subOrderMap = {};
+        orderList.forEach(cat => {
+            subOrderMap[cat] = Object.keys(promptData[cat]);
+        });
+
         let selBig = null,
             selSub = null;
 
+        // 要素を取得
         const bigList = document.getElementById("bigcat-list"),
             subList = document.getElementById("subcat-list"),
             addBigInput = document.getElementById("add-big-input"),
@@ -197,81 +179,95 @@
             addBigBtn = document.getElementById("add-big-btn"),
             renameBigBtn = document.getElementById("rename-big-btn"),
             deleteBigBtn = document.getElementById("delete-big-btn"),
-            addBigErr = document.getElementById("add-big-error"),
-            editBigErr = document.getElementById("edit-big-error"),
-
             addSubInput = document.getElementById("add-sub-input"),
             editSubInput = document.getElementById("edit-sub-input"),
             addSubBtn = document.getElementById("add-sub-btn"),
             renameSubBtn = document.getElementById("rename-sub-btn"),
             deleteSubBtn = document.getElementById("delete-sub-btn"),
-            addSubErr = document.getElementById("add-sub-error"),
-            editSubErr = document.getElementById("edit-sub-error"),
-
             dispTA = document.getElementById("displaynames-text"),
             promTA = document.getElementById("prompts-text"),
             saveWordsBtn = document.getElementById("save-words-btn"),
             jsonOut = document.getElementById("json-output");
 
+        // JSON表示を更新
         function updateJSON() {
-            jsonOut.value = JSON.stringify(promptData, null, 2)
+            const sorted = {};
+            orderList.forEach(cat => {
+                if (!promptData[cat]) return;
+                sorted[cat] = {};
+                const subOrder = subOrderMap[cat] || Object.keys(promptData[cat]);
+                subOrder.forEach(sub => {
+                    if (promptData[cat][sub]) {
+                        sorted[cat][sub] = promptData[cat][sub];
+                    }
+                });
+            });
+            jsonOut.value = JSON.stringify(sorted, null, 2);
         }
 
+        // 大カテゴリーを orderList の順で描画
         function refreshBig() {
             bigList.innerHTML = "";
-            Object.keys(promptData).forEach(cat => {
-                let li = document.createElement("li");
+            orderList.forEach(cat => {
+                if (!(cat in promptData)) return;
+                const li = document.createElement("li");
                 li.textContent = cat;
+                li.dataset.cat = cat;
                 if (cat === selBig) li.classList.add("selected");
                 li.onclick = () => {
                     selBig = cat;
                     selSub = null;
-                    addSubInput.disabled = false;
                     editBigInput.value = cat;
-                    addBigInput.value = "";
                     editSubInput.value = "";
+                    addSubInput.disabled = false;
                     refreshBig();
                     refreshSub();
                     clearWords();
                     updateButtons();
                 };
-                bigList.append(li);
+                bigList.appendChild(li);
             });
             updateButtons();
             updateJSON();
+            initBigSortable();
         }
 
+        // 小カテゴリーを subOrderMap[selBig] の順で描画
         function refreshSub() {
             subList.innerHTML = "";
             if (!selBig) return;
-            Object.keys(promptData[selBig]).forEach(sub => {
-                let li = document.createElement("li");
+            if (!subOrderMap[selBig]) {
+                subOrderMap[selBig] = Object.keys(promptData[selBig]);
+            }
+            subOrderMap[selBig].forEach(sub => {
+                if (!(sub in promptData[selBig])) return;
+                const li = document.createElement("li");
                 li.textContent = sub;
+                li.dataset.sub = sub;
                 if (sub === selSub) li.classList.add("selected");
                 li.onclick = () => {
                     selSub = sub;
                     editSubInput.value = sub;
-                    addSubInput.value = "";
                     refreshSub();
                     loadWords();
                     updateButtons();
                 };
-                subList.append(li);
+                subList.appendChild(li);
             });
+            updateButtons();
+            initSubSortable();
         }
 
         function clearWords() {
             dispTA.value = "";
             promTA.value = "";
-            saveWordsBtn.disabled = true
+            saveWordsBtn.disabled = true;
         }
 
         function loadWords() {
-            let w = promptData[selBig][selSub],
-                ks = Object.keys(w),
-                vs = Object.values(w);
-            dispTA.value = ks.join("\n");
-            promTA.value = vs.join("\n");
+            const obj = promptData[selBig][selSub];
+            dispTA.value = Object.keys(obj).join("\n");
+            promTA.value = Object.values(obj).join("\n");
             saveWordsBtn.disabled = false;
         }
 
@@ -283,40 +279,57 @@
             addSubBtn.disabled = !(selBig && addSubInput.value.trim());
             renameSubBtn.disabled = !(selSub && editSubInput.value.trim());
             deleteSubBtn.disabled = !selSub;
+
             saveWordsBtn.disabled = !(selBig && selSub);
+            addSubInput.disabled = !selBig;
+            editBigInput.disabled = !selBig;
+            editSubInput.disabled = !selSub;
         }
 
+        // 大カテゴリー追加
         addBigBtn.onclick = () => {
-            let v = addBigInput.value.trim();
-            addBigErr.textContent = "";
+            const v = addBigInput.value.trim();
+            if (!v) return;
             if (promptData[v]) {
-                addBigErr.textContent = "既に存在";
+                alert("既に存在します");
                 return;
             }
             promptData[v] = {};
+            orderList.push(v);
+            subOrderMap[v] = [];
             selBig = v;
             addBigInput.value = "";
             addSubInput.disabled = false;
             refreshBig();
             refreshSub();
             clearWords();
+            updateJSON();
         };
+
+        // 大カテゴリー名変更
         renameBigBtn.onclick = () => {
-            let v = editBigInput.value.trim();
-            editBigErr.textContent = "";
-            if (!v || !selBig || promptData[v]) {
-                editBigErr.textContent = "無効";
-                return;
-            }
+            const v = editBigInput.value.trim();
+            if (!selBig || !v || v === selBig || promptData[v]) return;
             promptData[v] = promptData[selBig];
             delete promptData[selBig];
+            // orderList 内のキーを変更
+            orderList = orderList.map(c => (c === selBig ? v : c));
+            // subOrderMap 転送
+            subOrderMap[v] = subOrderMap[selBig];
+            delete subOrderMap[selBig];
             selBig = v;
             refreshBig();
             refreshSub();
+            clearWords();
+            updateJSON();
         };
+
+        // 大カテゴリー削除
         deleteBigBtn.onclick = () => {
             if (!selBig || !confirm(`「${selBig}」を削除しますか？`)) return;
             delete promptData[selBig];
+            orderList = orderList.filter(c => c !== selBig);
+            delete subOrderMap[selBig];
             selBig = null;
             selSub = null;
             editBigInput.value = "";
@@ -325,56 +338,96 @@
             refreshBig();
             refreshSub();
             clearWords();
+            updateJSON();
         };
 
+        // 小カテゴリー追加
         addSubBtn.onclick = () => {
-            let v = addSubInput.value.trim();
-            addSubErr.textContent = "";
+            const v = addSubInput.value.trim();
+            if (!v) return;
             if (promptData[selBig][v]) {
-                addSubErr.textContent = "既に存在";
+                alert("既に存在します");
                 return;
             }
             promptData[selBig][v] = {};
+            subOrderMap[selBig].push(v);
             selSub = v;
             addSubInput.value = "";
             refreshSub();
             clearWords();
+            updateJSON();
         };
+
+        // 小カテゴリー名変更
         renameSubBtn.onclick = () => {
-            let v = editSubInput.value.trim();
-            editSubErr.textContent = "";
-            if (!v || !selSub || promptData[selBig][v]) {
-                editSubErr.textContent = "無効";
-                return;
-            }
+            const v = editSubInput.value.trim();
+            if (!selSub || !v || v === selSub || promptData[selBig][v]) return;
             promptData[selBig][v] = promptData[selBig][selSub];
             delete promptData[selBig][selSub];
+            // subOrderMap 内のキーを変更
+            subOrderMap[selBig] = subOrderMap[selBig].map(s => (s === selSub ? v : s));
             selSub = v;
             refreshSub();
             clearWords();
+            updateJSON();
         };
+
+        // 小カテゴリー削除
         deleteSubBtn.onclick = () => {
             if (!selSub || !confirm(`「${selSub}」を削除しますか？`)) return;
             delete promptData[selBig][selSub];
+            subOrderMap[selBig] = subOrderMap[selBig].filter(s => s !== selSub);
             selSub = null;
             editSubInput.value = "";
             refreshSub();
             clearWords();
+            updateJSON();
         };
 
+        // ワード保存
         saveWordsBtn.onclick = () => {
-            let L = dispTA.value.trim().split("\n"),
-                P = promTA.value.trim().split("\n");
+            const L = dispTA.value.trim().split("\n");
+            const P = promTA.value.trim().split("\n");
             if (L.length !== P.length) {
-                alert("行数不一致");
+                alert("行数が一致しません");
                 return;
             }
-            let obj = {};
-            L.forEach((l, i) => obj[l] = P[i]);
+            const obj = {};
+            L.forEach((label, i) => {
+                obj[label] = P[i];
+            });
             promptData[selBig][selSub] = obj;
             clearWords();
             updateJSON();
         };
+
+        // 入力欄に変化があったらボタン状態を更新
+        [addBigInput, editBigInput, addSubInput, editSubInput].forEach(e => {
+            e.oninput = updateButtons;
+        });
+
+        // 大カテゴリー並び替えを有効化
+        function initBigSortable() {
+            Sortable.create(bigList, {
+                animation: 150,
+                onEnd: () => {
+                    orderList = Array.from(bigList.children).map(li => li.dataset.cat);
+                    updateJSON();
+                }
+            });
+        }
+
+        // 小カテゴリー並び替えを有効化
+        function initSubSortable() {
+            if (!selBig) return;
+            Sortable.create(subList, {
+                animation: 150,
+                onEnd: () => {
+                    subOrderMap[selBig] = Array.from(subList.children).map(li => li.dataset.sub);
+                    updateJSON();
+                }
+            });
+        }
 
         document.getElementById("copy-json-btn").onclick = () => {
             const text = document.getElementById("json-output").value;
@@ -383,7 +436,7 @@
             });
         };
 
-        [addBigInput, editBigInput, addSubInput, editSubInput].forEach(e => e.oninput = updateButtons);
+        // 初回描画
         refreshBig();
         refreshSub();
         updateButtons();
